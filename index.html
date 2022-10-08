@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music player</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="player">
+    <!-- Dashboard -->
+        <div class="dashboard">
+            <!-- Header -->
+            <header>
+                <h4>Now playing: </h4>
+                <h2>Son Tung MTP</h2>
+            </header>
+
+            <!-- CD -->
+            <div class="cd">
+                <div class="cd-thumb" >
+                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                </div>
+            </div>
+
+            <!-- Control -->
+            <div class="control">
+                <div class="btn btn-repeat">
+                    <i class="fas fa-redo"></i>
+                </div>
+                <div class="btn btn-prev">
+                    <i class="fas fa-step-backward"></i>
+                </div>
+                <div class="btn btn-toggle-play">
+                    <i class="fas fa-pause icon-pause"></i>
+                    <i class="fas fa-play icon-play"></i>
+                </div>
+                <div class="btn btn-next">
+                    <i class="fas fa-step-forward"></i>
+                </div>
+                <div class="btn btn-random">
+                    <i class="fas fa-random"></i>
+                </div>
+            </div>
+
+            <input id="progress" class="progress" type="range" value="0" step="1" min="0" max="100">
+
+            <audio id="audio" src=""></audio>
+        </div>
+
+        <!-- Playlist -->
+        <div class="playlist">
+            <div class="song">
+                <div class="thumb">
+                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                </div>
+
+                <div class="body">
+                    <h3 class="title">Music name</h3>
+                    <p class="author">Singer</p>
+                </div>
+
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+
+            </div>
+
+            <div class="song">
+                <div class="thumb">
+                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                </div>
+
+                <div class="body">
+                    <h3 class="title">Music name</h3>
+                    <p class="author">Singer</p>
+                </div>
+
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+
+            </div>
+
+            <div class="song">
+                <div class="thumb">
+                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                </div>
+
+                <div class="body">
+                    <h3 class="title">Music name</h3>
+                    <p class="author">Singer</p>
+                </div>
+
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+
+            </div>
+
+            <div class="song">
+                <div class="thumb">
+                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                </div>
+
+                <div class="body">
+                    <h3 class="title">Music name</h3>
+                    <p class="author">Singer</p>
+                </div>
+
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+
+            </div>
+
+            <div class="song">
+                <div class="thumb">
+                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                </div>
+
+                <div class="body">
+                    <h3 class="title">Music name</h3>
+                    <p class="author">Singer</p>
+                </div>
+
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+
+            </div>
+
+            
+            <div class="song">
+                <div class="thumb" style="background-image: url('https://i.ytimg.com/vi/jTLhQf5KJSc/maxresdefault.jpg')">
+                </div>
+                <div class="body">
+                    <h3 class="title">Music name</h3>
+                    <p class="author">Singer</p>
+                </div>
+                <div class="option">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Design from: https://static.collectui.com/shots/3671744/musicloud-revolutionary-app-for-music-streaming-large -->
+    <script>
+        const $ = document.querySelector.bind(document);
+        const $$ = document.querySelectorAll.bind(document);
+        
+        // const playlist
+
+        const playButton = $('.btn-toggle-play');
+        const player = $('.player');
+
+        const app = {
+            currentIndx: 0,
+            isPlaying: false,
+
+            songs: [
+                {
+                    name: 'Muon Roi Ma Sao Con',
+                    singer: 'Son Tung',
+                    path: './audio/SƠN TÙNG M-TP - MUỘN RỒI MÀ SAO CÒN - OFFICIAL MUSIC VIDEO.mp4',
+                    image: './img/sontung-muonroimasaocon.jpg'
+                },
+
+                {
+                    name: 'Ngoai Troi Co Sao',
+                    singer: 'Tofu',
+                    path: './audio/Tofu - Ngoài Trời Có Sao ft. PC [Official Audio].mp4',
+                    image: './img/ngoaitroicosao.jpg'
+                },
+
+                {
+                    name: 'Muon Roi Ma Sao Con',
+                    singer: 'Son Tung',
+                    path: './audio/SƠN TÙNG M-TP - MUỘN RỒI MÀ SAO CÒN - OFFICIAL MUSIC VIDEO.mp4',
+                    image: './img/sontung-muonroimasaocon.jpg'
+                },
+
+                {
+                    name: 'Ngoai Troi Co Sao',
+                    singer: 'Tofu',
+                    path: './audio/Tofu - Ngoài Trời Có Sao ft. PC [Official Audio].mp4',
+                    image: './img/ngoaitroicosao.jpg'
+                }
+            ],
+        
+            render: function() {
+                // console.log(123);
+                const htmls = this.songs.map(song => {
+                    return `
+                        <div class="song">
+                            <div class="thumb" 
+                            style="background-image: url('${song.image}')">
+                            </div>
+
+                            <div class="body">
+                                <h3 class="title">${song.name}</h3>
+                                <p class="author">${song.singer}</p>
+                            </div>
+                        
+                            <div class="option">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                    `
+                })
+                $('.playlist').innerHTML = htmls.join('');
+            },
+            
+            defineProperties: function() {
+                Object.defineProperty(this, 'currentSong',{
+                    get: function() {
+                        return this.songs[this.currentIndx];
+                    }
+                })
+            },
+
+            handleEvents: function() {
+                const _this = this;
+                const cd = $('.cd');
+                const cdWidth = cd.offsetWidth; 
+
+                // xu ly phong to thu nho dashboard
+                document.onscroll = function() {
+                    // console.log(window.scrollY);
+                    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                    const newCdWidth = cdWidth - scrollTop;
+
+                    
+                    cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : 0;
+                    cd.stylr.opacity = newCdWidth / cdWidth;
+                }
+
+                // xu ly khi click play
+                playButton.onclick = function () {
+                   if(_this.isPlaying){
+                        _this.isPlaying = false;
+                        audio.pause();
+                       player.classList.remove('playing');
+
+                   }
+                   else{
+                        _this.isPlaying = true;
+                       audio.play();
+                       player.classList.add('playing');
+                    }
+                }
+
+                // song is played
+                audio.onplay = function () {
+                    _this.isPlaying = true;
+                    player.classList.add('playing')
+                }
+
+                // song is paused
+                audio.onpause = function () {
+                    _this.isPlaying = false;
+                    player.classList.remove('playing')
+                }
+            },
+
+
+            getCurrentSong: function() {
+                return this.songs[this.currentIndx];
+            },
+            loadCurrentSong: function() {
+                const heading = $('header h2');
+                const cdThumb = $('.cd-thumb');
+                const audio = $('#audio');
+
+                heading.textContent = this.currentSong.name;
+                cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
+
+                audio.src = this.currentSong.path;
+
+            },
+
+            start: function() {
+                // dinh nghia thuoc tinh cho object
+                this.defineProperties();
+                // lang nghe su kien DOM events
+                this.handleEvents();
+
+                // this.currentSong
+
+                // load bai hat vao
+                this.loadCurrentSong();
+                // render bai hat
+                this.render();
+            }
+        }
+
+        app.start();
+
+    </script>
+
+    <!-- 1.Render songs
+    2. Scroll top
+    3. Play / pause / seek
+    4. CD rotate
+    5. Next / prev
+    6. Random
+    7. Next / Repeat when ended
+    8. Active songs
+    9. Scroll active song into view
+    10. Play song when click  -->
+    
+</body>
+
+</html>
