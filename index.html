@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music player</title>
+    <title>Music playerrrrrrrrr</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -23,8 +23,8 @@
 
             <!-- CD -->
             <div class="cd">
-                <div class="cd-thumb" >
-                    <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                    
+                <div class="cd-thumb">
+                    <!-- <img src="./img/sontung-muonroimasaocon.jpg" alt="" class="img-sontung">                     -->
                 </div>
             </div>
 
@@ -157,12 +157,25 @@
         
         // const playlist
 
+        const heading = $('header h2');
+        const cdThumb = $('.cd-thumb');
+        const audio = $('#audio');
+
+        const cd = $('.cd');
+        
         const playButton = $('.btn-toggle-play');
         const player = $('.player');
+        const progress = $('#progress');
+        const nextBtn = $('.btn-next');
+        const prevBtn = $('.btn-prev');
+        const randomBtn = $('.btn-random');
+        const repeatBtn = $('.btn-repeat');
+        
 
         const app = {
             currentIndx: 0,
             isPlaying: false,
+            isRandom: false,
 
             songs: [
                 {
@@ -180,10 +193,10 @@
                 },
 
                 {
-                    name: 'Muon Roi Ma Sao Con',
-                    singer: 'Son Tung',
-                    path: './audio/SƠN TÙNG M-TP - MUỘN RỒI MÀ SAO CÒN - OFFICIAL MUSIC VIDEO.mp4',
-                    image: './img/sontung-muonroimasaocon.jpg'
+                    name: 'Banyan Tree [interlude]',
+                    singer: 'Machine Gun Kelly',
+                    path: './audio/Machine Gun Kelly - banyan tree [interlude] (Official Audio).mp4',
+                    image: './img/machinegunkelly.jpg'
                 },
 
                 {
@@ -227,8 +240,20 @@
 
             handleEvents: function() {
                 const _this = this;
-                const cd = $('.cd');
                 const cdWidth = cd.offsetWidth; 
+
+                // xu ly CD quay / dung
+                const cdThumbAnimated = cdThumb.animate([
+                    {
+                        transform: 'rotate(360deg)'
+                    }
+                ],{
+                    duration: 10000, // 10s
+                    iterations: Infinity
+                })
+
+                cdThumbAnimated.pause()
+                
 
                 // xu ly phong to thu nho dashboard
                 document.onscroll = function() {
@@ -238,7 +263,7 @@
 
                     
                     cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : 0;
-                    cd.stylr.opacity = newCdWidth / cdWidth;
+                    // cd.stylr.opacity = newCdWidth / cdWidth;
                 }
 
                 // xu ly khi click play
@@ -247,7 +272,6 @@
                         _this.isPlaying = false;
                         audio.pause();
                        player.classList.remove('playing');
-
                    }
                    else{
                         _this.isPlaying = true;
@@ -260,31 +284,108 @@
                 audio.onplay = function () {
                     _this.isPlaying = true;
                     player.classList.add('playing')
+                    cdThumbAnimated.play();
                 }
 
                 // song is paused
                 audio.onpause = function () {
                     _this.isPlaying = false;
                     player.classList.remove('playing')
+                    cdThumbAnimated.pause();
+
                 }
-            },
 
+                // tua song
+                audio.ontimeupdate = function() {
+                    if(audio.duration){
+                        const progressPercent = Math.floor(audio.currentTime / audio.duration * 100);
+                        progress.value = progressPercent;
+                    }
+                }
 
-            getCurrentSong: function() {
-                return this.songs[this.currentIndx];
+                // xu ly khi tua song
+                progress.onchange = function(e) {
+                    const seekTime = (audio.duration / 100 * e.target.value);
+                    audio.currentTime = seekTime;
+                }
+
+                // xu ly next song
+                nextBtn.onclick = function() {
+                    if(_this.isRandom){
+                        _this.randomSong();
+                    }
+                    else{
+                        _this.nextSong();
+                    }
+                    audio.play();
+                }
+
+                // xu ly prev song
+                prevBtn.onclick = function() {
+                    if(_this.isRandom){
+                        _this.randomSong();
+                    }
+                    else{
+                        _this.prevSong();
+                    }
+                    audio.play();
+                }
+
+                // xu ly random song
+                randomBtn.onclick = function(e){
+                    // if(_this.isRandom){
+                        _this.isRandom = !_this.isRandom;
+                    // }
+                    e.target.classList.toggle('active', _this.isRandom);
+                    // _this.randomSong();
+                }
+
+                // ket thuc song -> next song
+                audio.onended = function() {
+                    
+                }
+
             },
+            // getCurrentSong: function() {
+            //     return this.songs[this.currentIndx];
+            // },
             loadCurrentSong: function() {
-                const heading = $('header h2');
-                const cdThumb = $('.cd-thumb');
-                const audio = $('#audio');
-
                 heading.textContent = this.currentSong.name;
                 cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
-
                 audio.src = this.currentSong.path;
+            },
+            
+            // next song
+            nextSong: function() {
+                    this.currentIndx++;
+                    if(this.currentIndx >= this.songs.length){
+                        this.currentIndx = 0;
+                    }
+                    this.loadCurrentSong();
+            },
+            // prev song
+            prevSong: function() {
+                    this.currentIndx--;
+                    if(this.currentIndx < 0){
+                        this.currentIndx = this.songs.length - 1;
+                    }
+                    this.loadCurrentSong();
+            },
+            // random song
+            randomSong: function(){
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * this.songs.length)
+                } while(newIndex === this.currentIndx)
+
+                this.currentIndx = newIndex;
+                this.loadCurrentSong();
 
             },
+            //repeat song
+            repeatSong: function(){
 
+            },
             start: function() {
                 // dinh nghia thuoc tinh cho object
                 this.defineProperties();
