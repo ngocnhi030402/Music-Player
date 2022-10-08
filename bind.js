@@ -17,6 +17,8 @@ const $ = document.querySelector.bind(document);
         const randomBtn = $('.btn-random');
         const repeatBtn = $('.btn-repeat');
         const playlist = $('.playlist');
+
+        const PLAYER_STORAGE_KEY = 'HE HE';
         
 
         const app = {
@@ -24,7 +26,11 @@ const $ = document.querySelector.bind(document);
             isPlaying: false,
             isRandom: false,
             isRepeat: false,
-
+            settings: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
+            setSettings: function(key, value) {
+                this.settings[key] = value;
+                localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.settings));
+            },
             songs: [
                 {
                     name: 'Muon Roi Ma Sao Con',
@@ -59,7 +65,7 @@ const $ = document.querySelector.bind(document);
                 // console.log(123);
                 const htmls = this.songs.map((song, index) => {
                     return `
-                        <div class="song ${index === this.currentIndx ? 'active' : ''}">
+                        <div class="song ${index === this.currentIndx ? 'active' : ''}" data-index="${index}">
                             <div class="thumb" 
                             style="background-image: url('${song.image}')">
                             </div>
@@ -85,6 +91,8 @@ const $ = document.querySelector.bind(document);
                         return this.songs[this.currentIndx];
                     }
                 })
+
+               
             },
 
             handleEvents: function() {
@@ -189,6 +197,7 @@ const $ = document.querySelector.bind(document);
                     // if(_this.isRandom){
                         _this.isRandom = !_this.isRandom;
                     // }
+                    _this.setSettings('isRandom', _this.isRandom);
                     e.target.classList.toggle('active', _this.isRandom);
                     // _this.randomSong();
                 }
@@ -209,9 +218,28 @@ const $ = document.querySelector.bind(document);
                     }
                 }
 
+                // click vao playlist
+                playlist.onclick = function (e) {
+                    const songElement = e.target.closest('.song:not(.active');
+                    if(songElement || !e.target.closet('.option')) {
+                        if(songElement){
+                            _this.currentIndx = Number(songElement.dataset.index);
+                            _this.loadCurrentSong();
+                            audio.play();
+                            _this.render();
+                        }
+
+                        if(!e.target.closet('.option')){
+
+                        }
+                    }
+                }
+
                 // repeat song
                 repeatBtn.onclick = function(e){
-                    _this.isRepeat = !_this.isRepeat
+                    _this.isRepeat = !_this.isRepeat;
+                    _this.setSettings('isRepeat', _this.isRepeat);
+
                     repeatBtn.classList.toggle('active', _this.isRepeat);
                     
                 }
@@ -225,7 +253,12 @@ const $ = document.querySelector.bind(document);
                 cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
                 audio.src = this.currentSong.path;
             },
-            
+            loadSettings: function() {
+                this.isRandom = this.settings.isRandom;
+                this.isRepeat = this.settings.isRepeat;
+
+                // Object.assign(this, this.config);
+            },
             // next song
             nextSong: function() {
                     this.currentIndx++;
@@ -267,8 +300,12 @@ const $ = document.querySelector.bind(document);
                 }, 200);
             },
             start: function() {
+
+                this.loadSettings();
+
                 // dinh nghia thuoc tinh cho object
                 this.defineProperties();
+
                 // lang nghe su kien DOM events
                 this.handleEvents();
 
@@ -278,6 +315,10 @@ const $ = document.querySelector.bind(document);
                 this.loadCurrentSong();
                 // render bai hat
                 this.render();
+
+                // randomBtn.classList.toggle('active', this.isRandom);
+                // repeatBtn.classList.toggle('active', this.isRepeat);
+
             }
         }
 
